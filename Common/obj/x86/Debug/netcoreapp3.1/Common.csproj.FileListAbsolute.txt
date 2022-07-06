@@ -1,0 +1,10 @@
+D:\Coding Area\Semester 4\Common\bin\x86\Debug\netcoreapp3.1\LearnOpenTK.Common.deps.json
+D:\Coding Area\Semester 4\Common\bin\x86\Debug\netcoreapp3.1\LearnOpenTK.Common.dll
+D:\Coding Area\Semester 4\Common\bin\x86\Debug\netcoreapp3.1\LearnOpenTK.Common.pdb
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\Common.csproj.AssemblyReference.cache
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\Common.AssemblyInfoInputs.cache
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\Common.AssemblyInfo.cs
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\Common.csproj.CoreCompileInputs.cache
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\LearnOpenTK.Common.dll
+D:\Coding Area\Semester 4\Common\obj\x86\Debug\netcoreapp3.1\LearnOpenTK.Common.pdb
