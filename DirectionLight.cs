@@ -21,3 +21,4 @@ namespace GrafkomUAS
         public Vector3 Direction { get => direction; set => direction = value; }
     }
 }
+

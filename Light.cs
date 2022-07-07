@@ -22,7 +22,7 @@ namespace GrafkomUAS
             this.ambient = ambient;
             this.diffuse = diffuse;
             this.specular = specular;
-
+            
         }
 
         public Vector3 Position { get => position; set => position = value; }

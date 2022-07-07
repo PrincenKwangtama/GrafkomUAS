@@ -10,7 +10,7 @@ namespace GrafkomUAS
         {
             var ourWindowSetting = new NativeWindowSettings()
             {
-                Size = new Vector2i(800, 600),
+                Size = new Vector2i(1600, 900),
                 Title = "Proyek UAS Grafkom"
             };
             using (var win = new Windows(GameWindowSettings.Default, ourWindowSetting))

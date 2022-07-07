@@ -41,12 +41,12 @@ namespace GrafkomUAS
 
         public void DisplayAttribute()
         {
-            Console.WriteLine("Name: " + name);
-            Console.WriteLine("Shininess: " + shininess);
-            Console.WriteLine("Ambient " + ambient);
-            Console.WriteLine("Diffuse: " + diffuse);
-            Console.WriteLine("Specular: " + specular);
-            Console.WriteLine("Alpha: " + alpha);
+            //Console.WriteLine("Name: " + name);
+            //Console.WriteLine("Shininess: " + shininess);
+            //Console.WriteLine("Ambient " + ambient);
+            //Console.WriteLine("Diffuse: " + diffuse);
+            //Console.WriteLine("Specular: " + specular);
+            //Console.WriteLine("Alpha: " + alpha);
         }
     }
 }

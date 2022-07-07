@@ -1,7 +1,5 @@
-using LearnOpenTK.Common;
+﻿using LearnOpenTK.Common;
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 
 namespace GrafkomUAS
@@ -29,7 +27,7 @@ namespace GrafkomUAS
         bool gamma = false;
         private Texture _diffuseMap;
         private Texture _specularMap;
-
+        public Vector3 _centerPos = new Vector3(0,0,0);
 
         //Hirarki pada parent
         public List<Mesh> child = new List<Mesh>();
@@ -64,7 +62,7 @@ namespace GrafkomUAS
             //Inisialiasi VBO
             _vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            if (normals.Count < vertices.Count)
+            if(normals.Count < vertices.Count)
             {
                 GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * Vector3.SizeInBytes,
                vertices.ToArray(), BufferUsageHint.StaticDraw);
@@ -74,7 +72,7 @@ namespace GrafkomUAS
                 GL.BufferData(BufferTarget.ArrayBuffer, normals.Count * Vector3.SizeInBytes,
                 normals.ToArray(), BufferUsageHint.StaticDraw);
             }
-
+            
 
             var normalLocation = _shader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(normalLocation);
@@ -98,15 +96,13 @@ namespace GrafkomUAS
             GL.EnableVertexAttribArray(texCoordLocation);
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
 
-
-
-
             //Camera
             view = Matrix4.CreateTranslation(1.0f, 0.0f, 3.0f);
+            //projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), sizeX / sizeY, 0.1f, 100.0f);
             projection = Matrix4.CreateOrthographic(800, 600, 0.1f, 100.0f);
 
             //Diffuse and specular map
-            if (material != null)
+            if(material != null)
             {
                 _diffuseMap = material.Map_Kd;
                 _specularMap = material.Map_Ka;
@@ -121,7 +117,7 @@ namespace GrafkomUAS
         {
             //render itu akan selalu terpanggil setiap frame
             GL.BindVertexArray(_vao);
-            if (material != null)
+            if(material != null)
             {
                 _diffuseMap.Use(TextureUnit.Texture0);
                 _specularMap.Use(TextureUnit.Texture1);
@@ -133,7 +129,7 @@ namespace GrafkomUAS
             _shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
             _shader.SetVector3("viewPos", _camera.Position);
             ////material settings
-            if (material != null)
+            if(material != null)
             {
                 _shader.SetInt("material.diffuse_sampler", 0);
                 _shader.SetInt("material.specular_sampler", 1);
@@ -153,11 +149,11 @@ namespace GrafkomUAS
             }
 
             //Multiple Lights 
-            for (int i = 0; i < lights.Count; i++)
+            for(int i = 0; i < lights.Count; i++)
             {
                 PointLight pointLight = (PointLight)lights[i];
 
-
+                
                 //Process Lighting Shader
                 _shader.SetVector3("lights[" + i + "].position", pointLight.Position);
                 //_shader.SetVector3("lights[" + i + "].direction", new Vector3(-0.2f, -1.0f, -0.3f));
@@ -171,7 +167,7 @@ namespace GrafkomUAS
                 _shader.SetBool("blinn", blinn);
                 _shader.SetBool("gamma", gamma);
 
-
+                
             }
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Count);
@@ -271,7 +267,9 @@ namespace GrafkomUAS
                 meshobj.calculateTextureRender(_camera, light, i);
             }
         }
-
+        
+        
+       
         //TRANSFORMASI
         public Matrix4 getTransform()
         {
@@ -280,18 +278,40 @@ namespace GrafkomUAS
         public void rotate(float angleX, float angleY, float angleZ)
         {
             //rotate parentnya
+          
             //sumbu X
             transform = transform * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angleX));
             //sumbu Y
             transform = transform * Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angleY));
             //sumbu Z
             transform = transform * Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angleZ));
+
             //rotate childnya
             foreach (var meshobj in child)
             {
                 meshobj.rotate(angleX, angleY, angleZ);
             }
         }
+
+        public void rotate(float x,float y,float z,bool oncore)
+        {
+
+            transform = transform * Matrix4.CreateTranslation(-transform.ExtractTranslation());
+            //sumbu X
+            transform = transform * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(x));
+            //sumbu Y
+            transform = transform * Matrix4.CreateRotationY(MathHelper.DegreesToRadians(y));
+            //sumbu Z
+            transform = transform * Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(z));
+
+            transform = transform * Matrix4.CreateTranslation(transform.ExtractTranslation());
+
+            foreach (var meshobj in child)
+            {
+                meshobj.rotate(x,y,z,true);
+            }
+        }
+
         public void scale(float scale)
         {
             transform = transform * Matrix4.CreateScale(scale);
@@ -303,9 +323,21 @@ namespace GrafkomUAS
         public void translate(Vector3 translation)
         {
             transform = transform * Matrix4.CreateTranslation(translation);
+            _centerPos += translation;
+
             foreach (var meshobj in child)
             {
                 meshobj.translate(translation);
+            }
+        }
+
+        public void translateToZero()
+        {
+            transform = Matrix4.Identity;
+
+            foreach (var mesh in child)
+            {
+                mesh.translateToZero();
             }
         }
 
@@ -313,6 +345,11 @@ namespace GrafkomUAS
         public List<Vector3> getVertices()
         {
             return vertices;
+        }
+
+        public void setTransform (Matrix4 transform)
+        {
+            this.transform = transform;
         }
         public void setVertices(List<Vector3> vertices)
         {
