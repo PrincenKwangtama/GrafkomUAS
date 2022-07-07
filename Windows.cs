@@ -245,7 +245,6 @@ namespace GrafkomUAS
             //mainchar.rotate(0f, 0f, 0f);
             _objectPos = mainchar.getTransform().ExtractTranslation();
 
-            //lights[0].Position = new Vector3(-0.2f, 0.3f, 0.3f);
             lights[0].Position = new Vector3(0.0f, 1.5f, -0.3f);
             lights[1].Position = new Vector3(0.0f, 3f, -1.0f);
             lights[2].Position = new Vector3(0.0f, 0.5f, 2.0f);
