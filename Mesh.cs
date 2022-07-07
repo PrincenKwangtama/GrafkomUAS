@@ -1,4 +1,4 @@
-﻿using LearnOpenTK.Common;
+using LearnOpenTK.Common;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
@@ -80,26 +80,37 @@ namespace GrafkomUAS
             GL.EnableVertexAttribArray(normalLocation);
             GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
 
+            //Textures
+            //Inisialiasi VBO
+            _vbo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            if (textureVertices.Count < vertices.Count)
+            {
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * Vector3.SizeInBytes,
+               vertices.ToArray(), BufferUsageHint.StaticDraw);
+            }
+            else
+            {
+                GL.BufferData(BufferTarget.ArrayBuffer, textureVertices.Count * Vector3.SizeInBytes,
+                textureVertices.ToArray(), BufferUsageHint.StaticDraw);
+            }
+            var texCoordLocation = _shader.GetAttribLocation("aTexCoords");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+
+
+
 
             //Camera
             view = Matrix4.CreateTranslation(1.0f, 0.0f, 3.0f);
-            //projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), sizeX / sizeY, 0.1f, 100.0f);
             projection = Matrix4.CreateOrthographic(800, 600, 0.1f, 100.0f);
 
-
-            //Materials
-            //Console.WriteLine("================================================");
-            //Console.WriteLine("Object Name: " + name);
-            //Console.WriteLine("Vertices: " + vertices.Count);
-            //Console.WriteLine("Normals: " + normals.Count);
-            //Console.WriteLine("TextureVertices: " + textureVertices.Count);
-            //if (material != null)
-            //{
-            //    material.DisplayAttribute();
-            //}
-            //Console.WriteLine("================================================");
-
-
+            //Diffuse and specular map
+            if (material != null)
+            {
+                _diffuseMap = material.Map_Kd;
+                _specularMap = material.Map_Ka;
+            }
 
             foreach (var meshobj in child)
             {
@@ -110,16 +121,11 @@ namespace GrafkomUAS
         {
             //render itu akan selalu terpanggil setiap frame
             GL.BindVertexArray(_vao);
-
-            //_depthShader.Use();
-            //Process Depth Shader
-            //float near_plane = 1.0f, far_plane = 7.5f;
-            //Matrix4 lightProjection, lightView;
-            //Matrix4.CreateOrthographic(-10.0f, 10.0f, near_plane, far_plane, out lightProjection);
-            //lightView = Matrix4.LookAt(pointLight.Position, transform.ExtractTranslation(), new Vector3(0.0f, 1.0f, 0.0f));
-
-            //Matrix4 lightSpaceMatrix = lightProjection * lightView;
-            //_depthShader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+            if (material != null)
+            {
+                _diffuseMap.Use(TextureUnit.Texture0);
+                _specularMap.Use(TextureUnit.Texture1);
+            }
 
             _shader.Use();
             _shader.SetMatrix4("transform", transform);
@@ -196,6 +202,11 @@ namespace GrafkomUAS
         {
             //render itu akan selalu terpanggil setiap frame
             GL.BindVertexArray(_vao);
+            if (material != null)
+            {
+                _diffuseMap.Use(TextureUnit.Texture0);
+                _specularMap.Use(TextureUnit.Texture1);
+            }
 
             //_shader.Use();
             _shader.SetMatrix4("transform", transform);
@@ -252,11 +263,6 @@ namespace GrafkomUAS
             _shader.SetBool("blinn", blinn);
             _shader.SetBool("gamma", gamma);
 
-
-
-
-
-
             GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Count);
 
             //ada disini
@@ -265,8 +271,6 @@ namespace GrafkomUAS
                 meshobj.calculateTextureRender(_camera, light, i);
             }
         }
-
-
 
         //TRANSFORMASI
         public Matrix4 getTransform()
